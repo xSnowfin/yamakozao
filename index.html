@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Lost in the Wind — 蔵王ジャンプ台フェスティバル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js"></script>
+<style>
+:root{
+  --sora-fukaai: #5b4636;       /* 温泉旅館の木 */
+  --sora-yoru: #2f2925;         /* 焦げ茶・夜の温泉街 */
+  --juhyo-shiro: #fff8ed;       /* 湯気・和紙 */
+  --juhyo-usugumo: #eadfce;     /* 薄い湯気 */
+  --tomoshibi: #e6a44a;         /* 温泉街の灯り */
+  --tomoshibi-usu: #f5d59a;
+  --torii-shu: #b85c3e;         /* 温泉街の朱 */
+  --torii-shu-koi: #873c2b;
+  --komakusa: #c98fae;
+  --line-hairline: rgba(244,247,245,0.16);
+  --shadow-fukai: 0 20px 60px rgba(20,15,10,0.45);
+  --font-mincho: 'Shippori Mincho', serif;
+  --font-gothic: 'Zen Kaku Gothic New', sans-serif;
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+
+html,body{
+  height:100%;
+  background: var(--sora-yoru);
+  color: var(--juhyo-shiro);
+  font-family: var(--font-gothic);
+  overflow-x:hidden;
+}
+
+body{
+  padding-top: 60px;
+  padding-bottom: 60px;
+  background:
+    radial-gradient(ellipse 120% 60% at 50% -10%, rgba(230,164,74,0.16), transparent 60%),
+    radial-gradient(ellipse 80% 50% at 80% 100%, rgba(184,92,62,0.12), transparent 60%),
+    linear-gradient(180deg, var(--sora-fukaai) 0%, var(--sora-yoru) 100%);
+  min-height:100vh;
+  position:relative;
+}
+
+body.text-large {
+    font-size: 110%;
+}
+
+body.text-xlarge {
+    font-size: 120%;
+}
+
+/* 文字サイズ変更 */
+body.text-large .lead,
+body.text-large .speech-bubble,
+body.text-large .section-title,
+body.text-large .btn,
+body.text-large .choice-card,
+body.text-large .puzzle-visual,
+body.text-large .hint-box,
+body.text-large input,
+body.text-large .spot-name,
+body.text-large .spot-status,
+body.text-large .scan-status {
+    font-size: 120%;
+}
+
+body.text-xlarge .lead,
+body.text-xlarge .speech-bubble,
+body.text-xlarge .section-title,
+body.text-xlarge .btn,
+body.text-xlarge .choice-card,
+body.text-xlarge .puzzle-visual,
+body.text-xlarge .hint-box,
+body.text-xlarge input,
+body.text-xlarge .spot-name,
+body.text-xlarge .spot-status,
+body.text-xlarge .scan-status {
+    font-size: 140%;
+}
+
+/* 雪片アニメーション背景 */
+.snowfall{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;}
+.snowfall span{
+  position:absolute;
+  top:-5%;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#fff8ed;
+  opacity:0.12;
+  filter:blur(3px);
+  animation: fall linear infinite;
+}
+@keyframes fall{
+  to{ transform: translateY(110vh) translateX(20px); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .snowfall{display:none;}
+  *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+}
+
+#app{
+  position:relative; z-index:1;
+  max-width: 480px;
+  margin:0 auto;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ===== ヘッダー ===== */
+.app-header {
+  padding: 18px 20px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line-hairline);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(47, 41, 37, 0.92);
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+.app-header .brand{
+  font-family: var(--font-mincho);
+  font-weight:800;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  color: var(--tomoshibi-usu);
+}
+.app-header .brand small{
+  display:block;
+  font-family: var(--font-gothic);
+  font-weight:400;
+  font-size: 9px;
+  letter-spacing:0.15em;
+  color: rgba(244,247,245,0.45);
+  margin-top:2px;
+}
+.header-icons{ display:flex; gap:10px; }
+.icon-btn{
+  width:36px; height:36px;
+  border-radius:10px;
+  border:1px solid var(--line-hairline);
+  background: rgba(244,247,245,0.04);
+  color: var(--juhyo-shiro);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  font-size:16px;
+  transition: background 0.2s, transform 0.15s;
+}
+.icon-btn:hover{ background: rgba(244,247,245,0.1); }
+.icon-btn:active{ transform: scale(0.94); }
+.icon-btn:focus-visible, button:focus-visible, input:focus-visible{
+  outline: 2px solid var(--tomoshibi);
+  outline-offset:2px;
+}
+
+/* ===== フッターナビ ===== */
+.tab-bar{
+  position:fixed; 
+  bottom:0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display:flex;
+  border-top:1px solid var(--line-hairline);
+  background: rgba(47, 41, 37, 0.94);
+  backdrop-filter: blur(10px);
+}
+.tab-btn{
+  flex:1;
+  padding: 12px 6px 10px;
+  background:none; border:none;
+  color: rgba(244,247,245,0.45);
+  font-family: var(--font-gothic);
+  font-size: 10.5px;
+  letter-spacing:0.03em;
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  cursor:pointer;
+  transition: color 0.2s;
+}
+.tab-btn .tab-icon{ font-size:19px; }
+.tab-btn.active{ color: var(--tomoshibi); }
+.tab-btn.active .tab-icon{ filter: drop-shadow(0 0 8px rgba(224,169,81,0.5)); }
+
+/* ===== メインビュー ===== */
+.view{
+  flex:1;
+  padding: 20px 20px 28px;
+  display:none;
+  animation: viewIn 0.4s ease;
+}
+.view.active{ display:block; }
+@keyframes viewIn{
+  from{ opacity:0; transform: translateY(8px); }
+  to{ opacity:1; transform: translateY(0); }
+}
+
+/* ===== 共通カード ===== */
+.card{
+  background: linear-gradient(160deg, rgba(244,247,245,0.055), rgba(244,247,245,0.02));
+  border:1px solid var(--line-hairline);
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:14px;
+}
+.eyebrow{
+  font-size:10.5px;
+  letter-spacing:0.14em;
+  color: var(--tomoshibi);
+  font-weight:700;
+  display:flex; align-items:center; gap:6px;
+  margin-bottom:8px;
+}
+.eyebrow::before{
+  content:'';
+  width:14px; height:1px;
+  background: var(--tomoshibi);
+  display:inline-block;
+}
+h2.section-title{
+  font-family: var(--font-mincho);
+  font-size:20px;
+  font-weight:700;
+  line-height:1.5;
+  margin-bottom:10px;
+  color: var(--juhyo-shiro);
+}
+p.lead{
+  font-size:13.5px;
+  line-height:1.9;
+  color: rgba(244,247,245,0.78);
+}
+
+/* ===== ストーリー画面（キャラクター吹き出し）===== */
+.story-scene{
+  display:flex; flex-direction:column; align-items:center;
+  padding: 6px 0 20px;
+}
+.character-badge{
+  width:88px; height:88px;
+  border-radius:50%;
+  background: radial-gradient(circle at 35% 30%, var(--tomoshibi-usu), var(--torii-shu) 75%);
+  display:flex; align-items:center; justify-content:center;
+  font-size:40px;
+  box-shadow: 0 10px 30px rgba(178,73,47,0.35), inset 0 -6px 14px rgba(0,0,0,0.2);
+  margin-bottom:12px;
+  border: 3px solid rgba(244,247,245,0.15);
+}
+.character-name{
+  font-family: var(--font-mincho);
+  font-weight:700;
+  font-size:14px;
+  color: var(--tomoshibi-usu);
+  letter-spacing:0.06em;
+}
+.character-name span{
+  font-size:10px;
+  color: rgba(244,247,245,0.5);
+  font-family: var(--font-gothic);
+  margin-left:6px;
+}
+.speech-bubble{
+  width: 100%;
+  word-break: break-word;
+  white-space: pre-wrap;
+  margin-top:14px;
+  background: rgba(244,247,245,0.06);
+  border:1px solid var(--line-hairline);
+  border-radius: 4px 16px 16px 16px;
+  padding:16px 18px;
+  font-size:14px;
+  line-height:2;
+  color: var(--juhyo-shiro);
+  position:relative;
+  min-height: 60px;
+}
+.typewriter-cursor{
+  display:inline-block; width:2px; height:1em; background: var(--tomoshibi);
+  vertical-align:text-bottom; animation: blink 0.9s step-end infinite;
+}
+@keyframes blink{ 50%{ opacity:0; } }
+
+.progress-strip{
+  display:flex; gap:6px; margin: 16px 0 4px;
+}
+.progress-dot{
+  flex:1; height:4px; border-radius:2px;
+  background: rgba(244,247,245,0.12);
+  overflow:hidden;
+}
+.progress-dot.done{ background: var(--tomoshibi); }
+.progress-dot.current{
+  background: linear-gradient(90deg, var(--tomoshibi) 50%, rgba(244,247,245,0.12) 50%);
+  background-size:200% 100%;
+  animation: progFill 1.2s ease forwards;
+}
+@keyframes progFill{ from{background-position:100% 0;} to{background-position:0 0;} }
+
+#charEmoji img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+/* ===== ボタン ===== */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  width:100%;
+  padding: 14px 18px;
+  border-radius:12px;
+  border:none;
+  font-family: var(--font-gothic);
+  font-weight:700;
+  font-size:14px;
+  letter-spacing:0.03em;
+  cursor:pointer;
+  transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+  margin-bottom:10px;
+}
+.btn:active{ transform: scale(0.98); }
+.btn-primary{
+  background: linear-gradient(135deg, var(--tomoshibi), #c9873b);
+  color: var(--sora-yoru);
+  box-shadow: 0 8px 24px rgba(224,169,81,0.25);
+}
+.btn-primary:hover{ box-shadow: 0 10px 30px rgba(224,169,81,0.35); }
+.btn-secondary{
+  background: rgba(244,247,245,0.06);
+  border:1px solid var(--line-hairline);
+  color: var(--juhyo-shiro);
+}
+.btn-secondary:hover{ background: rgba(244,247,245,0.12); }
+.btn-torii{
+  background: linear-gradient(135deg, var(--torii-shu), var(--torii-shu-koi));
+  color: var(--juhyo-shiro);
+  box-shadow: 0 8px 24px rgba(178,73,47,0.3);
+}
+.btn[disabled]{ opacity:0.35; cursor:not-allowed; }
+
+.choice-row{ display:flex; flex-direction:column; gap:10px; margin-top:14px; }
+.choice-card{
+  text-align:left;
+  padding:15px 16px;
+  border-radius:12px;
+  border:1px solid var(--line-hairline);
+  background: rgba(244,247,245,0.03);
+  color: var(--juhyo-shiro);
+  font-family:var(--font-gothic);
+  cursor:pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+.choice-card:hover{ border-color: var(--tomoshibi); background: rgba(224,169,81,0.08); }
+.choice-card:active{ transform: scale(0.98); }
+.choice-card .cc-title{ font-weight:700; font-size:14px; margin-bottom:4px; }
+.choice-card .cc-desc{ font-size:11.5px; color: rgba(244,247,245,0.55); line-height:1.6; }
+
+#storySkipBtn{
+  position: absolute;
+  bottom: 250px;
+  right: 1px;
+  padding: 4px 8px;
+  font-size: 12px;
+  width:100px;
+  height:30px;
+}
+/* ===== 謎パズル ===== */
+.puzzle-box{
+  background: rgba(13,35,45,0.5);
+  border:1px dashed rgba(224,169,81,0.4);
+  border-radius:14px;
+  padding:18px;
+  text-align:center;
+  margin: 14px 0;
+}
+.puzzle-visual{
+  font-size:15px;
+  letter-spacing:0.12em;
+  color: var(--tomoshibi-usu);
+  font-family: var(--font-mincho);
+  line-height:2.2;
+  margin-bottom:6px;
+}
+.hint-toggle{
+  font-size:11.5px;
+  color: rgba(244,247,245,0.5);
+  background:none; border:none;
+  text-decoration:underline;
+  cursor:pointer;
+  padding:4px;
+}
+.hint-box{
+  margin-top:10px;
+  font-size:12px;
+  line-height:1.8;
+  color: var(--komakusa);
+  background: rgba(201,143,174,0.08);
+  border-radius:10px;
+  padding:10px 12px;
+  display:none;
+}
+.hint-box.show{ display:block; }
+
+.answer-input-row{ display:flex; gap:8px; margin-top:14px; }
+input[type="text"]{
+  flex:1;
+  padding: 13px 14px;
+  border-radius:10px;
+  border:1px solid var(--line-hairline);
+  background: rgba(244,247,245,0.05);
+  color: var(--juhyo-shiro);
+  font-family: var(--font-gothic);
+  font-size:14px;
+}
+input[type="text"]::placeholder{ color: rgba(244,247,245,0.35); }
+.answer-check-btn{
+  padding: 0 18px;
+  border-radius:10px;
+  border:none;
+  background: var(--tomoshibi);
+  color: var(--sora-yoru);
+  font-weight:700;
+  cursor:pointer;
+  font-size:13px;
+}
+.feedback-msg{
+  font-size:12.5px; margin-top:10px; min-height:18px;
+  font-weight:700;
+}
+.feedback-msg.ok{ color:#8fd4a8; }
+.feedback-msg.ng{ color:#e08a8a; }
+
+/* ===== QR探索リスト ===== */
+.map-wrap{
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid var(--line-hairline);
+  background: linear-gradient(160deg, #5b4636, #2f2925);
+  margin-bottom:14px;
+  padding:6px;
+}
+.spot-list{ display:flex; flex-direction:column; gap:8px; }
+.spot-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 14px;
+  border-radius:12px;
+  background: rgba(244,247,245,0.05);
+  border:1px solid rgba(244,247,245,0.1);
+}
+.spot-item.found{
+  background: rgba(143,212,168,0.12);
+  border-color: rgba(143,212,168,0.4);
+}
+.spot-item .spot-mark{
+  flex-shrink:0;
+  width:28px; height:28px;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px;
+  background: rgba(224,169,81,0.18);
+  color:#f4f7f5;
+  border:2px solid var(--tomoshibi-usu, #e0a951);
+}
+.spot-item.found .spot-mark{
+  background: rgba(143,212,168,0.25);
+  color:#8fd4a8;
+  border-color:#8fd4a8;
+}
+.spot-item .spot-name{
+  font-size:13px;
+  font-weight:700;
+  color: rgba(244,247,245,0.85);
+}
+.spot-item.found .spot-name{ color:#8fd4a8; }
+.spot-item .spot-status{
+  margin-left:auto;
+  font-size:11px;
+  color: rgba(244,247,245,0.5);
+  font-weight:700;
+}
+.spot-item.found .spot-status{ color:#8fd4a8; }
+
+.route-badge{
+  display:inline-block;
+  padding: 4px 12px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:0.04em;
+  margin-bottom:12px;
+}
+.route-badge.yuuki{ background: rgba(178,73,47,0.2); color:#e8a084; border:1px solid rgba(178,73,47,0.4); }
+.route-badge.yukemuri{ background: rgba(94,163,181,0.2); color:#9fd4e3; border:1px solid rgba(94,163,181,0.4); }
+
+/* ===== 冒険の書 ===== */
+.notebook-tabs{
+  display:flex; gap:6px; overflow-x:auto;
+  margin-bottom:14px;
+  padding-bottom:4px;
+}
+.notebook-tabs::-webkit-scrollbar{ height:4px; }
+.notebook-tabs::-webkit-scrollbar-thumb{ background: rgba(244,247,245,0.2); border-radius:2px; }
+.ntab{
+  flex-shrink:0;
+  padding: 8px 14px;
+  border-radius:20px;
+  border:1px solid var(--line-hairline);
+  background: rgba(244,247,245,0.04);
+  color: rgba(244,247,245,0.6);
+  font-size:12px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.ntab.active{ background: var(--tomoshibi); color: var(--sora-yoru); font-weight:700; border-color:transparent; }
+.notebook-page{ display:none; }
+.notebook-page.active{ display:block; animation: viewIn 0.3s ease; }
+.fact-item{
+  padding:12px 0;
+  border-bottom:1px solid var(--line-hairline);
+}
+.fact-item:last-child{ border-bottom:none; }
+.fact-item .fi-title{ font-weight:700; font-size:13.5px; margin-bottom:4px; color: var(--tomoshibi-usu); }
+.fact-item .fi-body{ font-size:12.5px; line-height:1.8; color: rgba(244,247,245,0.7); }
+
+.feather-log{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+.feather-chip{
+  padding:7px 12px;
+  border-radius:20px;
+  background: rgba(224,169,81,0.12);
+  border:1px solid rgba(224,169,81,0.3);
+  font-size:11.5px;
+  color: var(--tomoshibi-usu);
+}
+.feather-chip.empty{ color: rgba(244,247,245,0.3); border-style:dashed; background:none; }
+
+/* ===== エンディング ===== */
+.ending-hero{
+  text-align:center;
+  padding: 30px 10px 10px;
+}
+.ending-hero .em{ font-size:48px; margin-bottom:12px; }
+.ending-hero h2{
+  font-family:var(--font-mincho);
+  font-size:22px;
+  color: var(--tomoshibi-usu);
+  margin-bottom:10px;
+}
+
+/* トップ画面のヒーロー */
+.top-hero{
+  padding: 10px 0 4px;
+}
+.top-hero .kakuji{
+  font-family: var(--font-mincho);
+  font-weight:800;
+  font-size:28px;
+  line-height:1.5;
+  letter-spacing:0.04em;
+  margin-bottom:10px;
+  background: linear-gradient(135deg, var(--juhyo-shiro), var(--tomoshibi-usu));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.top-hero .sub{
+  font-size:12.5px;
+  color: rgba(244,247,245,0.55);
+  line-height:1.8;
+  margin-bottom:22px;
+}
+.stat-row{ display:flex; gap:10px; margin-bottom:20px; }
+.stat-box{
+  flex:1; text-align:center;
+  padding:12px 6px;
+  border-radius:12px;
+  background: rgba(244,247,245,0.04);
+  border:1px solid var(--line-hairline);
+}
+.stat-box .num{ font-family:var(--font-mincho); font-size:20px; color:var(--tomoshibi); font-weight:700; }
+.stat-box .lbl{ font-size:9.5px; color: rgba(244,247,245,0.5); margin-top:2px; }
+
+.scroll-fade{ height:1px; }
+ruby rt {
+    font-size: 0.55em;
+    user-select: none;
+}
+/* ==========================================
+   シネマティック演出
+========================================== */
+.cinematic{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+  opacity:1;
+  transition:opacity .8s;
+  background:#08151c;
+}
+.cinematic.hidden{ opacity:0; pointer-events:none; }
+
+/* 背景 */
+.cinematic-bg{
+  position:absolute;
+  inset:0;
+  background: radial-gradient(circle at center, rgba(224,169,81,.18), rgba(91,70,54,.97));
+  animation: bgZoom 6s linear infinite;
+}
+
+/* 光 */
+.cinematic-light{
+  position:absolute;
+  width:220vw;
+  height:220vw;
+  background: linear-gradient(120deg, transparent 45%, rgba(255,255,255,.05) 50%, transparent 55%);
+  animation: lightMove 6s linear infinite;
+}
+
+/* 本文 */
+.cinematic-content{
+  position:relative;
+  text-align:center;
+  padding:30px;
+  animation: fadeZoom .8s ease;
+}
+.cine-icon{
+  font-size:90px;
+  margin-bottom:25px;
+  animation: float 2.5s ease-in-out infinite;
+}
+#cineTitle{
+  font-family: var(--font-mincho);
+  font-size:42px;
+  letter-spacing:.08em;
+  color: var(--juhyo-shiro);
+  margin-bottom:12px;
+}
+#cineSubTitle{
+  font-family: var(--font-mincho);
+  font-size:24px;
+  color: var(--tomoshibi-usu);
+  margin-bottom:25px;
+  font-weight:700;
+}
+#cineText{
+  font-size:15px;
+  color: rgba(255,255,255,.75);
+  letter-spacing:.08em;
+}
+
+/* アニメーション */
+@keyframes float{
+  0%,100%{ transform: translateY(0px); }
+  50%{ transform: translateY(-15px); }
+}
+@keyframes fadeZoom{
+  from{ opacity:0; transform: scale(.85); }
+  to{ opacity:1; transform: scale(1); }
+}
+@keyframes bgZoom{
+  0%{ transform: scale(1); }
+  100%{ transform: scale(1.2); }
+}
+@keyframes lightMove{
+  0%{ transform: translateX(-40%) rotate(20deg); }
+  100%{ transform: translateX(40%) rotate(20deg); }
+}
+
+#charEmoji{ animation: floating 3s ease-in-out infinite; }
+@keyframes floating{
+  0%{ transform: translateY(0); }
+  50%{ transform: translateY(-10px); }
+  100%{ transform: translateY(0); }
+}
+
+/* 羽根 */
+.feather-effect{
+  position:fixed;
+  left:50%;
+  top:-100px;
+  font-size:80px;
+  animation: featherFall 3s ease forwards;
+  z-index:9999;
+}
+@keyframes featherFall{
+  0%{ opacity:0; transform: translateX(0) translateY(0) rotate(0deg); }
+  30%{ opacity:1; transform: translateX(-40px) translateY(150px) rotate(-30deg); }
+  60%{ transform: translateX(30px) translateY(300px) rotate(30deg); }
+  100%{ opacity:1; transform: translateX(0) translateY(420px) rotate(0deg); }
+}
+.ending-feather{
+  position:fixed;
+  top:-50px;
+  font-size:40px;
+  pointer-events:none;
+  z-index:999;
+  animation:
+  endingFall 5s linear forwards,
+  endingSwing 2s ease-in-out infinite;
+}
+@keyframes endingFall{
+  0%{
+    transform:translateY(0);
+    opacity:0;
+  }
+  20%{
+    opacity:1;
+  }
+  100%{
+    transform:translateY(110vh);
+    opacity:0;
+  }
+}
+@keyframes endingSwing{
+  0%{
+    margin-left:0;
+  }
+  50%{
+    margin-left:30px;
+  }
+  100%{
+    margin-left:-30px;
+  }
+}
+
+/* ===== QRスキャン（カメラ） ===== */
+.scan-wrap{
+  position:relative;
+  width:100%;
+  aspect-ratio: 3/4;
+  border-radius:16px;
+  overflow:hidden;
+  background:#000;
+  border:1px solid var(--line-hairline);
+  margin-bottom:14px;
+}
+.scan-wrap video{
+  width:100%; height:100%;
+  object-fit:cover;
+  display:block;
+}
+.scan-frame{
+  position:absolute;
+  inset: 14% 14%;
+  border:2px solid var(--tomoshibi);
+  border-radius:16px;
+  box-shadow: 0 0 0 999px rgba(0,0,0,0.35);
+  pointer-events:none;
+}
+.scan-status{
+  text-align:center;
+  font-size:13px;
+  color: rgba(244,247,245,0.75);
+  margin-bottom:14px;
+  min-height:18px;
+}
+.scan-idle{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px;
+  padding: 40px 20px;
+  text-align:center;
+}
+.scan-idle .icon{ font-size:44px; }
+body.text-large {
+  font-size: 130%;
+}
+
+body.text-large * {
+  font-size: inherit;
+}
+
+body.text-xlarge {
+  font-size: 150%;
+}
+
+body.text-xlarge * {
+  font-size: inherit;
+}
+</style>
+</head>
+<body>
+
+<div class="snowfall" id="snowfall"></div>
+
+<div id="app">
+  <header class="app-header">
+    <div class="brand">The Ultimate Onsen Experience<small>蔵王温泉祭り</small></div>
+    <div class="header-icons">
+      <button class="icon-btn" id="restartBtn" title="最初から" aria-label="最初からやり直す">↺</button>
+      <button class="icon-btn" id="textSizeBtn" title="文字サイズ" aria-label="文字サイズを変更">Aa</button>
+    </div>
+  </header>
+
+  <!-- ================= TOP ================= -->
+  <section class="view active" id="view-top">
+    <div class="top-hero">
+      <div class="kakuji">4つの<ruby>源泉<rt>げんせん</rt></ruby>の<ruby>印<rt>しるし</rt></ruby>を集めろ！</div>
+      <p class="sub"><ruby>蔵王温泉<rt>ざおうおんせん</rt></ruby>にまつわる<ruby>隠<rt>かく</rt></ruby>された謎。あなたはその<ruby>隠<rt>かく</rt></ruby>された<ruby>謎<rt>なぞ</rt></ruby>を解き明かせるだろうか。会場内のQRコードを探し、<ruby>謎<rt>なぞ</rt></ruby>を解き明かせ！</p>
+    </div>
+
+    <div class="stat-row" id="topStats">
+      <div class="stat-box"><div class="num" id="statFeathers">0/5</div><div class="lbl">集めた印</div></div>
+      <div class="stat-box"><div class="num" id="statQR">0/5</div><div class="lbl">発見QR</div></div>
+    </div>
+
+    <button class="btn btn-primary" id="startBtn"><ruby>謎<rt>なぞ</rt></ruby>を解き明かす</button>
+    <button class="btn btn-secondary" id="continueBtn" style="display:none;">つづきから再開する</button>
+
+    <div class="card" style="margin-top:8px;">
+      <div class="eyebrow">遊び方</div>
+      <p class="lead">① <ruby>物語<rt>ものがたり</rt></ruby>を読んで<ruby>謎<rt>なぞ</rt></ruby>を解く<br>②<ruby>会場<rt>かいじょう</rt></ruby>でQRコードを<ruby>探<rt>さが</rt></ruby>す<br>③QRコードを読み取って<ruby>謎<rt>なぞ</rt></ruby>を解く<br>④4つの<ruby>謎<rt>なぞ</rt></ruby>を解いて<ruby>謎<rt>なぞ</rt></ruby>を解き明かす</p>
+    </div>
+  </section>
+
+  <!-- ================= STORY ================= -->
+  <section class="view" id="view-story">
+    <div class="progress-strip" id="progressStrip"></div>
+    <div class="story-scene">
+      <div class="character-badge" id="charEmoji"><img src="images/navi.png" alt="ナビゲーション"></div>
+      <div class="character-name" id="charName"></div>
+      <div class="speech-bubble" id="storyText"></div>
+    </div>
+    <div id="storyChoices" class="choice-row"></div>
+    <button class="btn btn-primary" id="storyNextBtn" style="display:none;">次へ</button>
+  </section>
+
+  <!-- ================= QR SCAN (カメラ) ================= -->
+  <section class="view" id="view-scan">
+    <h2 class="section-title">QRコードを読み取る</h2>
+    <p class="lead" style="margin-bottom:14px;">会場で見つけたQRコードに、カメラを向けよう。</p>
+
+    <div class="scan-wrap" id="scanWrap" style="display:none;">
+      <video id="scanVideo" playsinline muted autoplay></video>
+      <div class="scan-frame"></div>
+    </div>
+    <div class="scan-idle" id="scanIdle">
+      <div class="icon">📷</div>
+      <p class="lead">カメラを起動してQRコードを読み取ります。</p>
+    </div>
+    <p class="scan-status" id="scanStatus"></p>
+
+    <button class="btn btn-torii" id="scanStartBtn">カメラを起動する</button>
+    <button class="btn btn-secondary" id="scanStopBtn" style="display:none;">カメラを止める</button>
+    <canvas id="scanCanvas" style="display:none;"></canvas>
+  </section>
+
+  <!-- ================= MINIGAME (プレースホルダー) =================
+       クイズ（謎）に答える前に挟むミニゲーム用の置き場。
+       中身は未実装。game.js の runMinigame() から showView("minigame") で
+       表示される想定。実装時はこの中に自由にUIを組んでOK。 -->
+  <section class="view" id="view-minigame">
+    <h2 class="section-title">魔法をかけよう</h2>
+    <p class="lead">技を成功させてコンボをきめて、謎を見つけよう。</p>
+    <iframe id="minigameFrame" title="ミニゲーム"
+      style="width:100%;height:75vh;border:0;border-radius:16px;background:#111827;display:block;"></iframe>
+  </section>
+
+  <!-- ================= PUZZLE ================= -->
+  <section class="view" id="view-puzzle">
+    <div class="eyebrow" id="puzzleRouteLabel">謎</div>
+    <h2 class="section-title" id="puzzleTitle">謎その一</h2>
+    <p class="lead" id="puzzleDesc"></p>
+
+    <div class="puzzle-box">
+      <div class="puzzle-visual" id="puzzleVisual"></div>
+      <button class="hint-toggle" id="hintToggle">ヒントを見る（冒険の書より）</button>
+      <div class="hint-box" id="hintBox"></div>
+    </div>
+
+    <div class="answer-input-row">
+      <input type="text" id="answerInput" placeholder="答えを入力…" aria-label="謎の答え" autocomplete="off">
+      <button class="answer-check-btn" id="answerCheckBtn">解答</button>
+    </div>
+    <div class="feedback-msg" id="answerFeedback"></div>
+    <button class="btn btn-secondary" id="puzzleBackBtn" style="margin-top:16px;">あとで挑戦する</button>
+  </section>
+
+  <!-- ================= MAP / QR SEARCH ================= -->
+  <section class="view" id="view-map">
+    <h2 class="section-title">QRコードを探そう</h2>
+    <p class="lead" style="margin-bottom:6px;">会場に散らばった5つのQRコードを、好きな順番で探し出そう。見つけたら読み取ろう。</p>
+    <p class="lead" id="mapProgressLabel" style="margin-bottom:14px; color: var(--tomoshibi-usu); font-weight:700;"></p>
+
+    <div class="map-wrap">
+      <div class="spot-list" id="spotList"></div>
+    </div>
+  </section>
+
+  <!-- ================= NOTEBOOK ================= -->
+  <section class="view" id="view-notebook">
+    <h2 class="section-title">冒険の書について</h2>
+    <div class="notebook-tabs" id="notebookTabs"></div>
+    <div id="notebookPages"></div>
+  </section>
+
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-view="view-top"><span class="tab-icon">⛩</span>ホーム</button>
+    <button class="tab-btn" data-view="view-map" id="tabMap"><span class="tab-icon">🗺</span>探索</button>
+    <button class="tab-btn" data-view="view-scan" id="tabScan"><span class="tab-icon">📷</span>QRを読む</button>
+  </nav>
+</div>
+
+<!-- ===== シネマティック演出 ===== -->
+<div id="cinematic" class="cinematic hidden">
+  <div class="cinematic-bg"></div>
+  <div class="cinematic-light"></div>
+  <div class="cinematic-content">
+    <div id="cineIcon" class="cine-icon">♨</div>
+    <h1 id="cineTitle">伝説の湯</h1>
+    <h2 id="cineSubTitle">4つの源泉の印を集めろ！</h2>
+    <p id="cineText">あなたは蔵王温泉に訪れた。</p>
+  </div>
+</div>
+<script src="game.js"></script>
+</body>
+</html>

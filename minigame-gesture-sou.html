@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+<title>♨ 湯けむり術「蒼」</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at center, #6b2e1f 0%, #2b1610 45%, #150b08 100%);
+    color: white;
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+}
+
+.game {
+    width: min(92vw, 480px);
+    text-align: center;
+}
+
+h1 {
+    margin: 0 0 5px;
+    font-size: 30px;
+}
+
+.subtitle {
+    color: #f3c98b;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.status {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.statusBox {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 9px 5px;
+}
+
+.statusLabel {
+    font-size: 11px;
+    color: #a5b4fc;
+}
+
+.statusValue {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.magicCircle {
+    width: min(80vw, 360px);
+    aspect-ratio: 1 / 1;
+    margin: 0 auto 15px;
+
+    border-radius: 50%;
+
+    border:
+        3px solid rgba(243,201,139,0.85);
+
+    box-shadow:
+        0 0 20px rgba(217,119,6,0.5),
+        inset 0 0 30px rgba(217,119,6,0.2);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    position: relative;
+
+    transition:
+        transform 0.3s,
+        box-shadow 0.3s;
+}
+
+.magicCircle::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+
+    border:
+        1px dashed rgba(243,201,139,0.6);
+
+    border-radius: 50%;
+}
+
+.magicCircle.active {
+    animation: magicPulse 0.7s;
+}
+
+@keyframes magicPulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+        box-shadow:
+            0 0 50px rgba(234,88,12,0.9),
+            inset 0 0 50px rgba(234,88,12,0.5);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.spellName {
+    font-size: 24px;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.instruction {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #cbd5e1;
+    z-index: 2;
+}
+
+.gesture {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    margin-top: 18px;
+
+    min-height: 60px;
+
+    z-index: 2;
+}
+
+.gestureItem {
+    width: 48px;
+    height: 48px;
+
+    border-radius: 12px;
+
+    background: rgba(255,247,235,0.1);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 25px;
+
+    border: 2px solid transparent;
+
+    transition: 0.2s;
+}
+
+.gestureItem.current {
+    border-color: #f59e0b;
+
+    background: rgba(245,158,11,0.2);
+
+    transform: scale(1.15);
+
+    box-shadow:
+        0 0 15px rgba(245,158,11,0.6);
+}
+
+.gestureItem.done {
+    background: rgba(34,197,94,0.3);
+
+    border-color: #22c55e;
+}
+
+.gestureItem.wrong {
+    background: rgba(239,68,68,0.3);
+
+    border-color: #ef4444;
+}
+
+.message {
+    min-height: 30px;
+
+    font-size: 17px;
+    font-weight: bold;
+
+    margin: 10px 0;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    flex: 1;
+
+    border: none;
+    border-radius: 12px;
+
+    padding: 14px 10px;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    color: white;
+
+    background: #b45309;
+
+    cursor: pointer;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+#sensorBtn {
+    background: #0f766e;
+}
+
+#startBtn {
+    background: #c2410c;
+}
+
+#restartBtn {
+    background: #475569;
+}
+
+button:disabled {
+    opacity: 0.5;
+}
+
+.help {
+    margin-top: 12px;
+
+    color: #94a3b8;
+
+    font-size: 12px;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(2,6,23,0.85);
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    z-index: 100;
+}
+
+.overlay.show {
+    display: flex;
+}
+
+.result {
+    width: min(88vw, 380px);
+
+    background: #3b2317;
+
+    border:
+        1px solid rgba(243,201,139,0.4);
+
+    border-radius: 20px;
+
+    padding: 30px 20px;
+
+    text-align: center;
+
+    box-shadow:
+        0 0 40px rgba(180,83,9,0.5);
+}
+
+.result h2 {
+    margin: 0 0 15px;
+
+    font-size: 32px;
+}
+
+.result p {
+    color: #cbd5e1;
+
+    line-height: 1.7;
+}
+
+.result button {
+    margin-top: 10px;
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="game">
+
+    <h1>♨ 湯けむり術「蒼」<span style="font-size:14px;opacity:.7;">（そう）</span></h1>
+
+    <div class="subtitle">
+        スマホを矢印の方向に傾けて湯けむりの技を完成させよう
+    </div>
+
+
+    <div class="status">
+
+        <div class="statusBox">
+            <div class="statusLabel">STAGE</div>
+            <div class="statusValue" id="stage">1</div>
+        </div>
+
+        <div class="statusBox">
+            <div class="statusLabel">COMBO</div>
+            <div class="statusValue" id="combo">0</div>
+        </div>
+
+        <div class="statusBox">
+            <div class="statusLabel">MISS</div>
+            <div class="statusValue" id="miss">0 / 3</div>
+        </div>
+
+    </div>
+
+
+    <div class="magicCircle" id="magicCircle">
+
+        <div class="spellName" id="spellName">
+            🔥 ファイア
+        </div>
+
+        <div class="instruction" id="instruction">
+            湯守の型を完成させろ！
+        </div>
+
+        <div class="gesture" id="gesture">
+        </div>
+
+    </div>
+
+
+    <div class="message" id="message">
+        「センサーを開始」を押してください
+    </div>
+
+
+    <div class="buttons">
+
+        <button id="sensorBtn">
+            📱 センサー開始
+        </button>
+
+        <button id="startBtn">
+            🧙 ゲーム開始
+        </button>
+
+        <button id="restartBtn">
+            🔄
+        </button>
+
+    </div>
+
+
+    <div class="help">
+        PCでは ← → ↑ ↓ キーで操作できます<br>
+        スペースキー = シェイク
+    </div>
+
+</div>
+
+
+<!-- 結果画面 -->
+
+<div class="overlay" id="overlay">
+
+    <div class="result">
+
+        <h2 id="resultTitle">
+            ✨ 技、成就！
+        </h2>
+
+        <p id="resultText">
+        </p>
+
+        <button id="playAgain">
+            もう一度挑戦
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   DOM
+========================================= */
+
+const sensorBtn =
+    document.getElementById("sensorBtn");
+
+const startBtn =
+    document.getElementById("startBtn");
+
+const restartBtn =
+    document.getElementById("restartBtn");
+
+const playAgain =
+    document.getElementById("playAgain");
+
+const stageDisplay =
+    document.getElementById("stage");
+
+const comboDisplay =
+    document.getElementById("combo");
+
+const missDisplay =
+    document.getElementById("miss");
+
+const spellName =
+    document.getElementById("spellName");
+
+const instruction =
+    document.getElementById("instruction");
+
+const gesture =
+    document.getElementById("gesture");
+
+const message =
+    document.getElementById("message");
+
+const magicCircle =
+    document.getElementById("magicCircle");
+
+const overlay =
+    document.getElementById("overlay");
+
+const resultTitle =
+    document.getElementById("resultTitle");
+
+const resultText =
+    document.getElementById("resultText");
+
+
+/* =========================================
+   魔法データ
+========================================= */
+
+const spells = [
+
+    {
+        name: "🌲 樹氷の型",
+        sequence: ["↑", "←", "↓"]
+    },
+
+    {
+        name: "❄️ 粉雪の型",
+        sequence: ["↓", "←", "↑", "→"]
+    },
+
+    {
+        name: "🌬️ 蔵王おろしの型",
+        sequence: ["→", "↓", "↓", "←"]
+    }
+
+];
+
+let spellOrder = [];
+
+function shuffleSpells() {
+  spellOrder = [...spells];
+
+  for (let i = spellOrder.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+
+    [spellOrder[i], spellOrder[j]] =
+      [spellOrder[j], spellOrder[i]];
+  }
+}
+shuffleSpells();
+
+/* =========================================
+   ゲーム状態
+========================================= */
+
+let stage = 1;
+
+let combo = 0;
+
+let miss = 0;
+
+let currentSequence = [];
+
+let currentIndex = 0;
+
+let gameStarted = false;
+
+let sensorEnabled = false;
+
+
+/* =========================================
+   センサーの入力判定用
+========================================= */
+
+let lastDirection = null;
+
+let lastInputTime = 0;
+
+let shakeLastTime = 0;
+
+
+/* =========================================
+   ステージに応じて魔法を選ぶ
+========================================= */
+
+function getSpell() {
+  return spellOrder[(stage - 1) % spellOrder.length];
+}
+
+
+/* =========================================
+   魔法を表示
+========================================= */
+
+function createSpell() {
+    const directions = ["←", "↑", "→", "↓"];
+
+    // 3～4個の入力をランダム生成
+    const length = Math.floor(Math.random() * 2) + 3;
+
+    currentSequence = [];
+
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * directions.length);
+        currentSequence.push(directions[randomIndex]);
+    }
+
+    currentIndex = 0;
+
+    spellName.textContent = "✨ ランダムの型";
+
+    gesture.innerHTML = "";
+
+    currentSequence.forEach((direction, index) => {
+        const item = document.createElement("div");
+
+        item.className = "gestureItem";
+        item.textContent = direction;
+
+        if (index === 0) {
+            item.classList.add("current");
+        }
+
+        gesture.appendChild(item);
+    });
+
+    instruction.textContent = "この順番でスマホを動かせ！";
+}
+
+
+/* =========================================
+   表示更新
+========================================= */
+
+function updateStatus() {
+
+    stageDisplay.textContent =
+        stage;
+
+    comboDisplay.textContent =
+        combo;
+
+    missDisplay.textContent =
+        `${miss} / 3`;
+
+}
+
+
+/* =========================================
+   ゲーム開始
+========================================= */
+
+function startGame() {
+
+    if (gameStarted) {
+        return;
+    }
+
+    gameStarted = true;
+
+    stage = 1;
+
+    combo = 0;
+
+    miss = 0;
+
+    updateStatus();
+
+    message.textContent =
+        "魔法の動きを再現しよう！";
+
+}
+
+
+/* =========================================
+   入力処理
+========================================= */
+
+function inputGesture(direction) {
+
+    if (!gameStarted) {
+        return;
+    }
+
+    const expected =
+        currentSequence[currentIndex];
+
+
+    /* 正解 */
+
+    if (direction === expected) {
+
+        const items =
+            document.querySelectorAll(
+                ".gestureItem"
+            );
+
+        items[currentIndex]
+            .classList.remove("current");
+
+        items[currentIndex]
+            .classList.add("done");
+
+
+        currentIndex++;
+
+
+        /* 魔法完成 */
+
+        if (
+            currentIndex >=
+            currentSequence.length
+        ) {
+
+            spellSuccess();
+
+            return;
+        }
+
+
+        items[currentIndex]
+            .classList.add("current");
+
+        message.textContent =
+            "✨ 正解！次の動き！";
+
+        return;
+    }
+
+
+    /* 不正解 */
+
+    miss++;
+
+    updateStatus();
+
+    message.textContent =
+        `❌ 違う！「${expected}」だ！`;
+
+    const items =
+        document.querySelectorAll(
+            ".gestureItem"
+        );
+
+    if (items[currentIndex]) {
+
+        items[currentIndex]
+            .classList.add("wrong");
+
+        setTimeout(() => {
+
+            items[currentIndex]
+                ?.classList.remove("wrong");
+
+        }, 250);
+
+    }
+
+
+
+}
+
+
+/* =========================================
+   魔法成功
+========================================= */
+
+function spellSuccess() {
+
+    combo++;
+
+    updateStatus();
+
+    message.textContent =
+        `✨ 魔法成功！ ${combo} / 3 コンボ`;
+
+
+    // 3コンボ達成でクリア
+    if (combo >= 3) {
+
+        gameClear();
+
+        return;
+    }
+
+
+    // 魔法陣の演出
+    magicCircle.classList.remove("active");
+
+    void magicCircle.offsetWidth;
+
+    magicCircle.classList.add("active");
+
+
+    // 次の魔法へ
+    setTimeout(() => {
+
+        if (!gameStarted) {
+            return;
+        }
+
+        createSpell();
+
+        message.textContent =
+            "次の魔法だ！";
+
+    }, 900);
+
+}
+
+/* =========================================
+   ゲームクリア
+========================================= */
+function gameClear() {
+
+    gameStarted = false;
+
+    resultTitle.textContent =
+        "🎉 魔法完成！！";
+
+    resultText.innerHTML =
+        `3つの技を連続で成功させた！<br><br>
+         <strong>♨ 湯守見習い、認定！ ♨</strong>`;
+
+    overlay.classList.add("show");
+
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ source: "minigame", type: "clear" }, "*");
+    }
+
+}
+/* =========================================
+   センサー開始
+========================================= */
+
+async function enableSensor() {
+
+    try {
+
+        /*
+            iPhone / iPad用
+        */
+
+        if (
+            typeof DeviceOrientationEvent !==
+            "undefined" &&
+            typeof DeviceOrientationEvent
+                .requestPermission === "function"
+        ) {
+
+            const permission =
+                await DeviceOrientationEvent
+                    .requestPermission();
+
+            if (permission !== "granted") {
+
+                message.textContent =
+                    "センサーの使用が許可されませんでした。";
+
+                return;
+
+            }
+
+        }
+
+
+        /*
+            傾き
+        */
+
+        window.addEventListener(
+            "deviceorientation",
+            handleOrientation
+        );
+
+
+        /*
+            加速度
+        */
+
+        window.addEventListener(
+            "devicemotion",
+            handleMotion
+        );
+
+
+        sensorEnabled = true;
+
+        sensorBtn.textContent =
+            "📱 センサーON";
+
+        sensorBtn.disabled = true;
+
+        message.textContent =
+            "センサー準備完了！";
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        message.textContent =
+            "センサーを利用できませんでした。";
+
+    }
+
+}
+
+
+/* =========================================
+   ジャイロ / 傾き
+========================================= */
+
+function handleOrientation(event) {
+
+    if (!sensorEnabled) {
+        return;
+    }
+
+    const gamma =
+        event.gamma || 0;
+
+    const beta =
+        event.beta || 0;
+
+
+    let direction = null;
+
+
+    /*
+        左右の傾き
+    */
+
+    if (gamma > 18) {
+
+        direction = "→";
+
+    } else if (gamma < -18) {
+
+        direction = "←";
+
+    }
+
+
+    /*
+        前後の傾き
+
+        betaが大きい
+        → 下
+
+        betaが小さい
+        → 上
+    */
+
+    else if (beta > 65) {
+
+        direction = "↓";
+
+    } else if (beta < 25) {
+
+        direction = "↑";
+
+    }
+
+
+    if (direction !== null) {
+
+        registerDirection(direction);
+
+    }
+
+}
+
+
+/* =========================================
+   同じ入力の連続検出を防ぐ
+========================================= */
+
+function registerDirection(direction) {
+
+    const now =
+        performance.now();
+
+
+    if (
+        direction === lastDirection &&
+        now - lastInputTime < 500
+    ) {
+
+        return;
+
+    }
+
+
+    lastDirection =
+        direction;
+
+    lastInputTime =
+        now;
+
+
+    inputGesture(direction);
+
+}
+
+
+/* =========================================
+   シェイク判定
+========================================= */
+
+function handleMotion(event) {
+
+    if (!sensorEnabled) {
+        return;
+    }
+
+    const acc =
+        event.accelerationIncludingGravity;
+
+
+    if (!acc) {
+        return;
+    }
+
+
+    const x =
+        Math.abs(acc.x || 0);
+
+    const y =
+        Math.abs(acc.y || 0);
+
+    const z =
+        Math.abs(acc.z || 0);
+
+
+    const power =
+        x + y + z;
+
+
+    /*
+        強い動きならシェイク
+    */
+
+    if (power > 35) {
+
+        const now =
+            performance.now();
+
+        if (
+            now - shakeLastTime >
+            700
+        ) {
+
+            shakeLastTime =
+                now;
+
+            /*
+                シェイクは
+                ランダムで方向として扱う
+
+                ※後で「📳」という
+                専用ジェスチャーにもできる
+            */
+
+            inputGesture("↑");
+
+        }
+
+    }
+
+}
+
+
+/* =========================================
+   PC操作
+========================================= */
+
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (!gameStarted) {
+            return;
+        }
+
+
+        const keyMap = {
+
+            ArrowUp: "↑",
+
+            ArrowDown: "↓",
+
+            ArrowLeft: "←",
+
+            ArrowRight: "→"
+
+        };
+
+
+        if (keyMap[event.key]) {
+
+            inputGesture(
+                keyMap[event.key]
+            );
+
+        }
+
+
+        /*
+            スペース
+            → シェイク扱い
+        */
+
+        if (event.code === "Space") {
+
+            inputGesture("↑");
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   リセット
+========================================= */
+
+function resetGame() {
+
+    stage = 1;
+
+    combo = 0;
+
+    miss = 0;
+
+    currentIndex = 0;
+
+    gameStarted = false;
+
+    lastDirection = null;
+
+    overlay.classList.remove("show");
+
+    shuffleSpells();
+
+    updateStatus();
+
+    createSpell();
+
+    message.textContent =
+        sensorEnabled
+        ? "「ゲーム開始」を押してください"
+        : "「センサー開始」を押してください";
+
+}
+
+
+/* =========================================
+   ボタン
+========================================= */
+
+sensorBtn.addEventListener(
+    "click",
+    enableSensor
+);
+
+
+startBtn.addEventListener(
+    "click",
+    startGame
+);
+
+
+restartBtn.addEventListener(
+    "click",
+    resetGame
+);
+
+
+playAgain.addEventListener(
+    "click",
+    resetGame
+);
+
+
+/* =========================================
+   初期化
+========================================= */
+
+createSpell();
+
+updateStatus();
+
+</script>
+
+</body>
+</html>
