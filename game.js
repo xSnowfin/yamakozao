@@ -941,11 +941,26 @@ async function startQrCamera(){
     scanStream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: { ideal: "environment" } }
     });
-  } catch(err){
-    statusEl.textContent = "カメラを起動できませんでした。ブラウザのカメラ許可設定をご確認ください。";
+  } catch(err) {
+    console.error("カメラ起動エラー:", err);
+
+    let message = "カメラを起動できませんでした。";
+
+    if (err.name === "NotAllowedError") {
+      message = "カメラの使用が許可されていません。ブラウザの設定を確認してください。";
+    } else if (err.name === "NotFoundError") {
+      message = "カメラが見つかりませんでした。";
+    } else if (err.name === "NotReadableError") {
+      message = "カメラを別のアプリが使用している可能性があります。";
+    } else if (err.name === "SecurityError") {
+      message = "このページではカメラを使用できません。";
+    } else {
+      message += ` (${err.name})`;
+    }
+
+    statusEl.textContent = message;
     return;
   }
-
   const video = $("#scanVideo");
   video.srcObject = scanStream;
   await video.play();
