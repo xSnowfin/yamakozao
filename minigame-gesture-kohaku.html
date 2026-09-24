@@ -336,11 +336,6 @@ button:disabled {
             <div class="statusValue" id="combo">0</div>
         </div>
 
-        <div class="statusBox">
-            <div class="statusLabel">MISS</div>
-            <div class="statusValue" id="miss">0 / 3</div>
-        </div>
-
     </div>
 
 
@@ -435,9 +430,6 @@ const stageDisplay =
 
 const comboDisplay =
     document.getElementById("combo");
-
-const missDisplay =
-    document.getElementById("miss");
 
 const spellName =
     document.getElementById("spellName");
@@ -591,9 +583,6 @@ function updateStatus() {
 
     comboDisplay.textContent =
         combo;
-
-    missDisplay.textContent =
-        `${miss} / 3`;
 
 }
 
