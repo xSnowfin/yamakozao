@@ -79,7 +79,7 @@ const ROUTES = {
 const STORY = {
   intro: [
     { char: '<img src="images/navi.png" alt="ナレーション">', name:"ナレーション", text:"蔵王温泉に訪れたあなた。" },
-    { char: '<img src="images/navi.png" alt="ナレーション">', name:"ナレーション", text:"着いて足湯に入っていると、隣にいた謎の怪しげな男性、に声をかけられる。" },
+    { char: '<img src="images/navi.png" alt="ナレーション">', name:"ナレーション", text:"近くにあった足湯に入っていると、隣にいた謎の怪しげな男性Xに声をかけられる。" },
     { char:'<img src="images/x.png" alt="x">', name:"X", text:"いい湯でしょう..この湯よりもすごい「伝説の湯」をご存じですか" },
     { char: '<img src="images/navi.png" alt="ナレーション">', name:"ナレーション", text:"そう聞くとXは古びた巻物を取り出した。" },
     { char: '<img src="images/x.png" alt="x">', name:"X", text:"この巻物は、伝説の湯について書かれた巻物です" },
